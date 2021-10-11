@@ -142,3 +142,11 @@
     margin-right: 1em;
     margin-left: 1em;
 }
+
+.left-nav {
+    margin-left: 20px;
+}
+
+.acad-bold {
+    font-weight:  600;
+}

@@ -1,9 +1,10 @@
 <?php 
 
-namespace AppBundle\Vito;
+namespace AppBundle\Acad;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use AppBundle\Helper\QueryHelper;
 
 class BaseProcess
 {
@@ -12,7 +13,7 @@ class BaseProcess
         $config,
         $connection,
         $output,
-        $api = '',
+        $data = [],
         $dimension_table = '',
         $errors = [],
         $logger,
@@ -22,14 +23,7 @@ class BaseProcess
     public function __construct($parameters)
     {
         $this->parameters = $parameters;
-        // $this->config = $parameters['config'];
-        // $this->api = $parameters['api'];
-        $this->connection = !empty($parameters['connection']) ? $parameters['connection'] : null;
         $this->output = !empty($parameters['output']) ? $parameters['output'] : null;
-        // $this->logger = $parameters['logger'];
-        // $this->base_dir = __DIR__ . '/../..';
-        // $this->data_dir = $this->base_dir . '/data';
-        // $this->dimension_table = $this->api === 'volumes' ? 'country_keyword' : 'country_topic';
     }
 
     protected function execute()
@@ -37,33 +31,34 @@ class BaseProcess
         
     }
 
-    protected function exec($sql, $log = false)
+    protected function exec($sql, $params = [], $log = false, $throwException = false)
     {
-        if ($log) {
-            $this->log($sql);
-        }
-        $connection = $this->connection;
-        $stmt = $connection->prepare($sql);
-        $stmt->execute();
-        return $stmt;
+        return QueryHelper::exec($sql, $params, $log, $throwException);
     }
 
-    protected function fetch($sql, $log = false)
+    protected function fetch($sql, $params = [], $log = false)
     {
-        return $this->fetchAll($sql, false, $log);
+        return QueryHelper::fetch($sql, $params, $log);
     }
 
-    protected function fetchAll($sql, $all = true, $log = false)
+    protected function fetchAll($sql, $params = [], $log = false)
     {
-        $stmt = $this->exec($sql, $log);
-        $records = $all ? $stmt->fetchAll() : $stmt->fetch();
-
-        return $records;
+        return QueryHelper::fetchAll($sql, $params, $log);
     }
 
-    protected function quote($str)
+    protected function lastInsertId($connection = null)
     {
-        return $this->connection->quote($str);
+        return QueryHelper::lastInsertId($connection);
+    }
+
+    protected function getTableName($t, $ticks = true)
+    {
+        return QueryHelper::getTableName($t, $ticks);
+    }
+
+    protected function dropTableIfExists($tables, $log = false)
+    {
+        return QueryHelper::dropTableIfExists($tables, $log);
     }
 
     protected function log($msg, $std_out = false, $level = 'info')
@@ -114,6 +109,11 @@ class BaseProcess
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    public function getData()
+    {
+        return $this->data;
     }
 
     public static function autoExecute($parameters)

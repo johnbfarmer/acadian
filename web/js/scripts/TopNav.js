@@ -1,19 +1,12 @@
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
-
 const moment = require('moment');
 
-const ChartTitleArea = (props) => {
+const TopNav = (props) => {
     let isDisabledPrev = props.prevLink === null;
     let isDisabledNext = props.nextLink === null;
-console.log(props);
-    let title = props.title;
-    if (props.units) {
-        title = props.units + ' ' + props.agg
-        if (props.dateEnd) {
-            title +=  ' thru ' + moment(props.dateEnd).format('MMM D, YYYY');
-        }
-    }
+    let title = props.title || moment().format('MMM D, YYYY');
+
     return (
         <div className='title-area'>
             <h3>
@@ -29,4 +22,4 @@ console.log(props);
     );
 }
 
-module.exports = ChartTitleArea
+module.exports = TopNav;
