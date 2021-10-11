@@ -20,6 +20,23 @@ const getData = (view, id) => {
         })
 }
 
+const postData = (view, data, id) => {
+    view = apiMap[view] || view
+    var url = urlPrefix + view
+    if (id) {
+        url = url + id
+    }
+
+    return axios
+        .post(url, data)
+        .then(function(response) {
+            return response
+        })
+        .catch(function(error) {
+            console.log('error::', error)
+        })
+}
+
 const saveForm = (view, data) => {
     var url = urlPrefix + '/api/save/' + view
     return axios
@@ -47,6 +64,7 @@ const deleteRecord = (view, id) => {
 
 module.exports = {
     getData,
+    postData,
     saveForm,
     deleteRecord,
     urlPrefix

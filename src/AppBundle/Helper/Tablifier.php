@@ -10,14 +10,14 @@ class Tablifier
         $rows = [],
         $total = [],
         $colConfig = [],
-        $hiddenCols = ['iso_date', 'id', 'comments'],
+        $hiddenCols = ['is_total', 'id', 'student_course_id', 'hide_subject'],
         $table = [];
 
-    public function __construct($data, $limitCols, $total)
+    public function __construct($data, $limitCols = [], $total = [])
     {
         $this->data = $data;
         $this->total = $total;
-        $this->colConfig = $this->getColConfig();
+        $this->colConfig = [];
         $this->getLimitedCols($limitCols);
     }
 
@@ -25,6 +25,7 @@ class Tablifier
     {
         $cols = $this->getCols();
         $rows = $this->getRows();
+        GenericHelper::log($this->rows);
         $this->table = [
             'table' => [
                 'columns' => $this->cols,
@@ -32,6 +33,7 @@ class Tablifier
                 'total' => $this->total,
             ]
         ];
+        GenericHelper::log($this->table);
     }
 
     protected function getCols()
@@ -40,33 +42,23 @@ class Tablifier
 
         if (!empty($this->data)) {
             foreach (current($this->data) as $uid => $item) {
-                if (empty($this->colConfig[$uid])) {
-                    continue;
-                }
                 $cols[$uid] = [
                     'uid' => $uid,
-                    'label' => $this->colConfig[$uid],
+                    'label' => $uid,
                     'visible' => !in_array($uid, $this->hiddenCols),
                 ];
-            }
-
-            foreach (array_keys($this->colConfig) as $uid) {
-                if (!empty($cols[$uid])) {
-                    $this->cols[] = $cols[$uid];
-                }
+                $this->cols[] = $cols[$uid];
             }
         }
     }
 
     protected function getRows()
     {
+        GenericHelper::log($this->data);
         if (!empty($this->data)) {
             foreach ($this->data as $rows) {
                 $row = [];
                 foreach ($rows as $uid => $item) {
-                    if (empty($this->colConfig[$uid])) {
-                        continue;
-                    }
                     $row[$uid] = $item;
                 }
                 $this->rows[] = $row;
@@ -74,7 +66,7 @@ class Tablifier
         }
     } 
 
-    public static function tablify($vars, $limitCols, $total) 
+    public static function tablify($vars, $limitCols = [], $total = []) 
     {
         $className = get_called_class();
         $class = new $className($vars, $limitCols, $total);
@@ -96,41 +88,6 @@ class Tablifier
 
             $this->colConfig = $tempCols;
         }
-    }
-
-    // define ordering, inclusion and labels
-    protected function getColConfig()
-    {
-        return [
-            'date' => 'Date',
-            'iso_date' => 'iso_date',
-            'id' => 'id',
-            'name' => 'Name',
-            'distance' => 'Distance',
-            'distance_run' => 'Distance Run',
-            'steps' => 'Steps',
-            'stepsPerKm' => 'Steps/Km',
-            'sleep' => 'Sleep',
-            'weight' => 'Weight',
-            'abdominals' => 'Abdominals',
-            'score' => 'Score',
-            // 'systolic' => 'Systolic',
-            // 'diastolic' => 'Diastolic',
-            'bp' => 'Blood Pressure',
-            'pulse' => 'Pulse',
-            'za' => 'ZA',
-            'floors' => 'Floors',
-            'floors_run' => 'Floors Run',
-            'very_active_minutes' => 'VAM',
-            'very_active_minutes' => 'VAM',
-            'very_active_minutes' => 'VAM',
-            // 'alcohol' => 'Alcohol',
-            // 'tobacco' => 'Tobacco',
-            'comments' => 'Comments',
-            'distance_biked' => 'Distance Biked',
-            'minutes_biked' => 'Minutes Biked',
-            'swim' => 'Swim',
-        ];
     }
 
     public function getTable() 

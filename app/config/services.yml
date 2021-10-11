@@ -1,7 +1,7 @@
 # Learn more about services, parameters and containers at
 # https://symfony.com/doc/current/service_container.html
 parameters:
-    #parameter_name: value
+    database_dsn: "mysql:host=%database_host%;dbname=%database_name%"
 
 services:
     # default configuration for services in *this* file
@@ -34,9 +34,24 @@ services:
     #     arguments:
     #         $someArgument: 'some_value'
 
+    db_connection:
+        class: PDO
+        arguments:
+            - %database_dsn%;charset=UTF8
+            - %database_user%
+            - %database_password%
+            - {PDO:: {ATTR_ERRMODE: PDO::ERRMODE_EXCEPTION, MYSQL_ATTR_INIT_COMMAND: 'SET NAMES "utf8"'}}
+
     generic_helper:
         class: AppBundle\Helper\GenericHelper
         arguments: [ "@logger" ]
+        tags:
+            - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest}
+            - {name: kernel.event_listener, event: console.command, method: onConsoleCommand}
+
+    query_helper:
+        class: AppBundle\Helper\QueryHelper
+        arguments: [ "@db_connection" ]
         tags:
             - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest}
             - {name: kernel.event_listener, event: console.command, method: onConsoleCommand}

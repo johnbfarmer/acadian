@@ -62,11 +62,8 @@ const tablify = (props) => {
         });
 
         return (
-            <tr 
-                key={'r_' + rowIdx}
-            >
-                {cells}
-            </tr>);
+            <Table.Row key={'r_' + rowIdx}>{cells}</Table.Row>
+        );
     });
 
     let total = ''
@@ -86,9 +83,7 @@ const tablify = (props) => {
     return (
         <Table celled striped>
              <Table.Header>
-                <Table.Row>
-                    {cols}
-                </Table.Row>
+                <Table.Row>{cols}</Table.Row>
              </Table.Header>
             <Table.Body>
                 {rows}
