@@ -10,7 +10,7 @@ class Tablifier
         $rows = [],
         $total = [],
         $colConfig = [],
-        $hiddenCols = ['is_total', 'id', 'student_course_id', 'hide_subject'],
+        $hiddenCols = ['is_total', 'id', 'student_course_id', 'hide_subject', 'iso_date'],
         $table = [];
 
     public function __construct($data, $limitCols = [], $total = [])
